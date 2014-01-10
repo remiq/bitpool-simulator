@@ -11,16 +11,19 @@ class Blockchain
   roots: {
     A: 'S'
   }
+  foundThisTick: false
+  enableAnonymous: true
 
   constructor: (config) ->
     this[key] = val for key, val of config
     console.log(this)
 
   tick: () ->
+    @foundThisTick = false
     pool.onTick() for pool in @pools
     @currentTick += 1
     @allTicks += 1
-    @onAnonymousFind() if (@currentTick > @ticksPerBlock)
+    @onAnonymousFind() if (@enableAnonymous and not @foundThisTick and @currentTick >= @ticksPerBlock)
     process.stdout.write('.') if not @verbose
     console.log("tick") if @verbose
     if (@limit > 0 and @allTicks > @limit)
@@ -46,6 +49,7 @@ class Blockchain
 
 
   onPoolFind: (pool) ->
+    @foundThisTick = true
     process.stdout.write(pool.name) if not @verbose
     console.log(pool.name, "found a block") if @verbose
     @currentTick = 0
@@ -64,7 +68,7 @@ class Blockchain
     blocks = longest[1].length - 1
     for pool in @pools
       count = longest[1].split(pool.name).length - 1
-      console.log(pool.name, '( global '+pool.chanceToFindBlock + '%)', "found", count, "out of", blocks, "so", Math.floor((count/blocks)*100)+'%')
+      console.log(pool.getFullName(), '( global '+pool.chanceToFindBlock + '%)', "found", count, "out of", blocks, "so", Math.floor((count/blocks)*100)+'%')
 
 
   run: () ->

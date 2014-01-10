@@ -1,7 +1,11 @@
 Pool = require('./pool')
 
 class ChallengerPool extends Pool
-  offset: 1
+  offset: 10
+
+  getFullName: () ->
+    return "ChallengerPool(" + @offset + ") "+ @name
+
   onBlock: (poolName) ->
     return if (poolName == @name)
     longest = @blockchain.getLongestChain()

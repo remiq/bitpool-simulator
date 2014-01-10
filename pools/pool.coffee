@@ -8,6 +8,9 @@ class Pool
     @blockchain = blockchain
     @blockchain.roots[@name] = @blockchain.roots['A']
 
+  getFullName: () ->
+    return "Pool "+ @name
+
   onTick: () ->
     @dig()
 
@@ -27,7 +30,6 @@ class Pool
 
   found: () ->
     @blockchain.roots[@name] += @name
-    f = () => @blockchain.onPoolFind(this)
-    setTimeout(f, 0)
+    @blockchain.onPoolFind(this)
 
 module.exports = Pool
